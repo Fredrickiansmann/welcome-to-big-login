@@ -3,35 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logintogod</title>
+    <title>Registertogod</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 
     <h1 class="centre">
-        BIG LOGIN CENTRE
+        BIG REGISTER CENTRE
     </h1>
-    <form action="service.php" method="get">
+    <form action="service.php" method="post">
         <div class="centre">
             <img src="icon.png">
         </div>
 
         <div class="centre, inputsarea">
             
-            <h2>Hello! We need YOU to Login TODAY!</h2>
+            <h2>Hello! We need YOU to Resgister TODAY!</h2>
             
             <p class="topthingy">Please enter your details!</p> 
             
-            <label class="descriptor" for="username" id="username">Your account's username</label>
+            <label class="descriptor" for="username" id="username">Your NEW account's username</label>
             
             <input type="text" class="inputtext" placeholder="Enter username" id="username" name="username" required>
 
-            <label class="descriptor" for="password"id="password">Your account's password</label>
+            <label class="descriptor" for="password"id="password">Your NEW account's password</label>
             
             <input type="text" class="inputtext" placeholder="Enter password" id="password" name="password" required>
+
+            <label class="descriptor" for="email"id="email">Your NEW account's email</label>
+            
+            <input type="text" class="inputtext" placeholder="Enter email" id="email" name="email" required>
+
+            <label class="descriptor" for="address" id="address">Your NEW home's address*</label>
+            
+            <input type="text" class="inputtext" placeholder="Enter address" id="address" name="address">
             <button type="submit">
-                <h2>Login</h2>
+                <h2>Register</h2>
             </button>
         </div>
 
