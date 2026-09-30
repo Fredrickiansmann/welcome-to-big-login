@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chatroom</title>
+<title>Welcome to Big Messaging</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -15,7 +15,7 @@ p{text-align:center}
 .room{
   width:600px;max-width:100%;margin:auto;padding:20px;
   background-color:rgb(136,133,151);
-  border-top-right-radius:100px;border-bottom-left-radius:100px;
+  border-top-right-radius:0;border-bottom-left-radius:100px;
   border:5px solid white;
 }
 .descriptor{text-align:left;font-size:18px;display:block;margin:0 0 10px}
@@ -48,8 +48,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
-<h1>Chatroom</h1>
-<p class="sub">Say something to whoever is around.</p>
+<h1>Welcome To Big Messaging</h1>
+<p class="sub">Talk about Skibidi, Phonk, And Habsburgs.</p>
 
 <div class="room">
   <div id="log"><p class="empty">Loading messages…</p></div>
@@ -75,7 +75,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
   function render(msgs){
     var atBottom=log.scrollHeight-log.scrollTop-log.clientHeight<60;
     log.textContent='';
-    if(!msgs.length){var p=document.createElement('p');p.className='empty';p.textContent='No messages yet. Be the first!';log.appendChild(p);return;}
+    if(!msgs.length){var p=document.createElement('p');p.className='empty';p.textContent='Type blad';log.appendChild(p);return;}
     msgs.forEach(function(m){
       var d=document.createElement('div'); d.className='msg'+(m.uid===myId?' me':'');
       var w=document.createElement('span'); w.className='who'; w.textContent=m.name||'Anonymous';
@@ -112,6 +112,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
       render(snap.docs.map(function(d){return d.data();}).reverse());
     },function(){ status.textContent='Lost connection to the chat.'; });
   })();
+})();
+</script>
+</body>
+</html>
 })();
 </script>
 </body>
