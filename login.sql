@@ -30,25 +30,45 @@ CREATE DATABASE pestmegye;
 USE pestmegye;
 
 
+CREATE TABLE `chat` (
+  `id` int(11) NOT NULL,
+  `fellhasid` int(11) NOT NULL,
+  `tartalom` varchar(255) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `felhasznalok`
+--
+
 CREATE TABLE `felhasznalok` (
   `id` int(11) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL,
-  `address` varchar(100)
+  `address` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `felhasznalok`
 --
 
-INSERT INTO `felhasznalok` (`id`, `email`, `username`, `password`, `address`) VALUES
-(1, 'bigbenboygaming123@gmail.com' ,'Kovacs Bendedek', 'jelszo123', 'Zisti 7')
-(2, 'nagypisti@outlook.com' ,'Nagy Istvan', 'fiszivecskedesz', '8 kerulet')
-(3, 'gdomjam@freemail.com' ,'Domjam Gabor', 'Ipad123', 'szar bs brawler');
+INSERT INTO `felhasznalok` (`id`, `email`, `password`, `username`, `address`) VALUES
+(1, 'bigbenboygaming123@gmail.com', 'jelszo123', 'Kovacs Bendedek', 'Zisti 7'),
+(2, 'nagypisti@outlook.com', 'fiszivecskedesz', 'Nagy Istvan', '8 kerulet'),
+(3, 'gdomjam@freemail.com', 'Ipad123', 'Domjam Gabor', 'szar bs brawler');
+
 --
 -- Indexek a kiírt táblákhoz
 --
+
+--
+-- A tábla indexei `chat`
+--
+ALTER TABLE `chat`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- A tábla indexei `felhasznalok`
@@ -59,6 +79,12 @@ ALTER TABLE `felhasznalok`
 --
 -- A kiírt táblák AUTO_INCREMENT értéke
 --
+
+--
+-- AUTO_INCREMENT a táblához `chat`
+--
+ALTER TABLE `chat`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT a táblához `felhasznalok`
