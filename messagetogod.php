@@ -1,5 +1,3 @@
-<?php include messageservice.php ?>
-<?= $chatresult?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +33,6 @@ p{text-align:center}
 .who{font-size:12px;font-weight:bold;opacity:.7;display:block;margin-bottom:2px}
 .empty{opacity:.7;margin:auto}
 .row{display:flex;gap:10px;margin-bottom:10px}
-#name{width:180px;flex:none}
 #text{flex:1;min-width:0}
 button{
   width:100%;height:60px;transition:all .5s;
@@ -46,7 +43,7 @@ button{
 button:hover{background-color:rgb(66,61,90);color:white;border:5px solid rgb(66,61,90)}
 button:disabled{opacity:.5;cursor:not-allowed}
 #status{font-size:14px;margin:12px 0 0;min-height:1.2em}
-@media (max-width:520px){h1{font-size:36px}.row{flex-direction:column}#name{width:100%}.room{border-top-right-radius:60px;border-bottom-left-radius:60px}}
+@media (max-width:520px){h1{font-size:36px}.row{flex-direction:column}.room{border-top-right-radius:60px;border-bottom-left-radius:60px}}
 </style>
 </head>
 <body>
@@ -56,8 +53,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <div class="room">
   <div id="log"><p class="empty">Loading messages…</p></div>
   <div class="row">
-    <input id="name" class="inputtext" maxlength="24" placeholder="Your name" autocomplete="off">
-    <input id="text" class="inputtext" maxlength="500" placeholder="Type a message…" autocomplete="off">
+    <input id="text" class="inputtext" maxlength="255" placeholder="Type a message…" autocomplete="off">
   </div>
   <button id="send" type="button">Send</button>
   <p id="status"></p>
@@ -65,55 +61,53 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
 <script>
 (function(){
-  var log=document.getElementById('log'), nameEl=document.getElementById('name'),
-      textEl=document.getElementById('text'), sendBtn=document.getElementById('send'),
+  var log=document.getElementById('log'), textEl=document.getElementById('text'),
+      sendBtn=document.getElementById('send'),
       status=document.getElementById('status');
-  var db=null, col=null, localMsgs=[], myId='';
-
-  try{ myId=localStorage.getItem('chat-id')||''; if(!myId){myId='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('chat-id',myId);} }catch(e){ myId='u'+Math.random().toString(36).slice(2,10); }
-  try{ nameEl.value=localStorage.getItem('chat-name')||''; }catch(e){}
-  nameEl.addEventListener('change',function(){ try{localStorage.setItem('chat-name',nameEl.value.trim());}catch(e){} });
 
   function render(msgs){
     var atBottom=log.scrollHeight-log.scrollTop-log.clientHeight<60;
     log.textContent='';
     if(!msgs.length){var p=document.createElement('p');p.className='empty';p.textContent='Type blad';log.appendChild(p);return;}
     msgs.forEach(function(m){
-      var d=document.createElement('div'); d.className='msg'+(m.uid===myId?' me':'');
+      var d=document.createElement('div'); d.className='msg';
       var w=document.createElement('span'); w.className='who'; w.textContent=m.name||'Anonymous';
       var t=document.createElement('span'); t.textContent=m.text||'';
       d.appendChild(w); d.appendChild(t); log.appendChild(d);
     });
-    if(atBottom||msgs.length) log.scrollTop=log.scrollHeight;
+    if(atBottom) log.scrollTop=log.scrollHeight;
   }
 
   async function send(){
     var text=textEl.value.trim(); if(!text) return;
-    var name=nameEl.value.trim()||'Anonymous';
-    try{localStorage.setItem('chat-name',nameEl.value.trim());}catch(e){}
-    var msg={name:name,text:text,uid:myId,ts:Date.now()};
-    textEl.value=''; textEl.focus();
-    if(col){
-      try{ await col.add(msg); status.textContent=''; }
-      catch(e){
-        status.textContent = e && e.code==='invalid_argument'
-          ? 'You have view-only access, so you can read but not post.'
-          : 'Could not send that message. Please try again.';
-      }
-    } else { localMsgs.push(msg); render(localMsgs); }
+    var body=new URLSearchParams({message:text});
+    sendBtn.disabled=true;
+    try{
+      var response=await fetch('messageservice.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
+      var result=await response.json();
+      if(!response.ok) throw new Error(result.error||'Could not send that message.');
+      textEl.value='';
+      status.textContent='';
+      await loadMessages();
+      textEl.focus();
+    }catch(e){status.textContent=e.message||'Could not send that message. Please try again.';}
+    finally{sendBtn.disabled=false;}
   }
   sendBtn.addEventListener('click',send);
   textEl.addEventListener('keydown',function(e){ if(e.key==='Enter'){e.preventDefault();send();} });
 
+  async function loadMessages(){
+    try{
+      var response=await fetch('messageservice.php',{cache:'no-store'});
+      var messages=await response.json();
+      if(!response.ok) throw new Error(messages.error||'Could not load messages.');
+      render(messages);
+      if(status.textContent==='Could not load messages. Check the server connection.'){status.textContent='';}
+    }catch(e){status.textContent='Could not load messages. Check the server connection.';}
+  }
   render([]);
-  (async function(){
-    try{ db=await claude.use('db'); }catch(e){ db=null; }
-    if(!db){ status.textContent='Shared chat is unavailable here, so messages stay on this page only.'; return; }
-    col=db.collection('messages');
-    col.orderBy('ts','desc').limit(100).onSnapshot(function(snap){
-      render(snap.docs.map(function(d){return d.data();}).reverse());
-    },function(){ status.textContent='Lost connection to the chat.'; });
-  })();
+  loadMessages();
+  window.setInterval(loadMessages,1000);
 })();
 </script>
 </body>
