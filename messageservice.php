@@ -64,7 +64,9 @@ if (!$result) {
 }
 
 $messages = [];
+$currentUserId = (int) ($_SESSION['user_id'] ?? 0);
 while ($row = $result->fetch_assoc()) {
+    $row['is_me'] = (int) $row['uid'] === $currentUserId;
     $messages[] = $row;
 }
 echo json_encode(array_reverse($messages), JSON_UNESCAPED_UNICODE);
