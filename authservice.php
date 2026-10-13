@@ -12,10 +12,10 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET'
-    && isset($_GET['username'], $_GET['password'])) {
-    $username = $_GET['username'];
-    $password = $_GET['password'];
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['username'], $_POST['password']) && !isset($_POST['email'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
     $stmt = $conn->prepare("SELECT id, username FROM felhasznalok WHERE username = ? AND password = ?");
     $stmt->bind_param("ss", $username, $password);
     $stmt->execute();
@@ -30,8 +30,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET'
         exit;
     }
 
-    echo "nincs találat";
     $stmt->close();
+    $conn->close();
+    header('Location: logintogod.html?error=invalid');
+    exit;
 } elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['username'], $_POST['password'], $_POST['email'])) {
     $username = $_POST['username'];

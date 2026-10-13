@@ -12,7 +12,7 @@
     <h1 class="centre">
         BIG LOGIN CENTRE
     </h1>
-    <form action="authservice.php" method="get">
+    <form action="authservice.php" method="post">
         <div class="centre">
             <img src="icon.png">
         </div>
@@ -22,6 +22,8 @@
             <h2>Hello! We need YOU to Login TODAY!</h2>
             
             <p class="topthingy">Please enter your details!</p> 
+
+            <p id="login-error" role="alert" hidden>Hibás felhasználónév vagy jelszó.</p>
             
             <label class="descriptor" for="username" id="username">Your account's username</label>
             
@@ -29,7 +31,7 @@
 
             <label class="descriptor" for="password"id="password">Your account's password</label>
             
-            <input type="text" class="inputtext" placeholder="Enter password" id="password" name="password" required>
+            <input type="password" class="inputtext" placeholder="Enter password" id="password" name="password" required>
             <button type="submit">
                 <h2>Login</h2>
             </button>
@@ -38,5 +40,10 @@
 
     </form>
 <script src="script.js"></script>
+<script>
+    if (new URLSearchParams(window.location.search).get('error') === 'invalid') {
+        document.getElementById('login-error').hidden = false;
+    }
+</script>
 </body>
 </html>
